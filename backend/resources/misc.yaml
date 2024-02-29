@@ -1,0 +1,45 @@
+Resources:
+  ArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:provider.environment.ARTIFACTS_BUCKET}
+      CorsConfiguration: 
+        CorsRules:
+        - AllowedHeaders: 
+          - "*"
+          AllowedMethods:
+          - GET 
+          - POST 
+          - PUT 
+          AllowedOrigins:
+          - "*"
+          ExposedHeaders: []
+
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:provider.environment.FRONTEND_BUCKET}
+
+  WorkerBroker:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: fullstack-async-app-test
+      VisibilityTimeout: 60
+      DelaySeconds: 10
+
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: ${self:provider.environment.FRONTEND_BUCKET}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: FullstackAsyncTestBucketPolicy
+            Effect: Allow
+            Principal:
+              Service: "cloudfront.amazonaws.com"
+            Action: "s3:GetObject"
+            Resource: "arn:aws:s3:::${self:provider.environment.FRONTEND_BUCKET}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
