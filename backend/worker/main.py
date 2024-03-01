@@ -19,12 +19,16 @@ def lambda_handler(event,_context):
             msg = json.loads(record['body'])
             handled_msgs.append(record['receiptHandle'])
             bucket_key = msg['filename']
+
             print(f"Searching for file {bucket_key.split('.')[0]}")
             filepath = get_image_from_bucket(bucket_key)
+
             print(f"Processing image {filepath}")
             processed_path = process_image(filepath)
+
             print("File processed sucessfully!\nUploading artifact to bucket")
             s3.upload_file(processed_path, BUCKET_NAME, bucket_key+'Processed')
+
             print(f"Removing from key {bucket_key} from bucket")
             s3.delete_object(Bucket=BUCKET_NAME, Key=bucket_key)
         delete_messages(handled_msgs)
@@ -58,20 +62,17 @@ def get_image_from_bucket(bucket_key):
 
 def process_image(filepath):
     try:
-        # Load the cascade
         face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-        # Read the input image
         img = cv2.imread(filepath)
-        # Convert into grayscale
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # Detect faces
-        faces = face_cascade.detectMultiScale(gray, 1.023, 4)
-        # Draw rectangle around the faces
+        faces = face_cascade.detectMultiScale(gray, 1.17, 4)
+
         for (x, y, w, h) in faces:
             cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
         processed_filename = filepath.split('.')[0]+'Processed.jpg'
         cv2.imwrite(processed_filename, img)
+
         return processed_filename
     except Exception as e:
         raise(e)

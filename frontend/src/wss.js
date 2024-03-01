@@ -3,7 +3,9 @@ import useWebSocket from 'react-use-websocket';
 
 export const useArtifactChecker = (filename, readyToConnect) => {
 
-  const { sendJsonMessage, lastMessage, readyState } = useWebSocket(readyToConnect ? '/socket' : null);
+  const WSS_URL = process.env.REACT_APP_WSS_URL
+
+  const { sendJsonMessage, lastMessage, readyState } = useWebSocket(readyToConnect ? WSS_URL : null);
   const [ imageUrl, setImageUrl ] = useState("")
   const [ resend, setResend ] = useState(true)
   

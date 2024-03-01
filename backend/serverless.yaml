@@ -47,7 +47,7 @@ functions:
       Resource: !GetAtt WorkerBroker.Arn
     - Effect: Allow
       Action: s3:PutObject
-      Resource: 'arn:aws:s3:::${self:provider.environment.ARTIFACTS_BUCKET}/*'
+      Resource: arn:aws:s3:::${self:provider.environment.ARTIFACTS_BUCKET}/*
 
     events:
       - http:

@@ -8,11 +8,13 @@ Resources:
         Comment: Rewrite path for websocket 
         Runtime: cloudfront-js-1.0
       FunctionCode: |
-        function handler(e) {          
-          if (e.request.uri.includes('/socket')) {
-            e.request.uri = '/dev';
+        function handler(e) {      
+          var request = e.request;
+    
+          if (request.uri.includes('/socket')) {
+            request.uri = '/dev';
           }
-          return e.request;
+          return request;
         }
 
   CloudFrontDistribution:
