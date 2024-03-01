@@ -1,0 +1,25 @@
+service: 'fullstack-async-serverless-app'
+provider:
+  name: aws
+  runtime: python3.11
+  stage: ${opt:stage, 'dev'}
+  region: ${env:AWS_REGION}
+  environment:
+    ARTIFACTS_BUCKET: ${env:ARTIFACTS_BUCKET}
+    FRONTEND_BUCKET: ${env:FRONTEND_BUCKET}
+  ecr:
+    images:
+      fullstack_async_worker:
+        path: ./worker
+
+plugins:
+  - serverless-iam-roles-per-function
+
+resources:
+  - ${file(./resources/misc.yaml)}
+  - ${file(./resources/cloudfront.yaml)}
+      
+functions:
+  - ${file(./uploader/deployment.yaml)}
+  - ${file(./worker/deployment.yaml)}
+  - ${file(./checker/deployment.yaml)}

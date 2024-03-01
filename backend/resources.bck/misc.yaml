@@ -1,4 +1,12 @@
 Resources:
+
+  WorkerBroker:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: fullstack-async-app-test
+      VisibilityTimeout: 60
+      DelaySeconds: 10
+
   ArtifactsBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -19,13 +27,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: ${self:provider.environment.FRONTEND_BUCKET}
-
-  WorkerBroker:
-    Type: 'AWS::SQS::Queue'
-    Properties:
-      QueueName: fullstack-async-app-test
-      VisibilityTimeout: 60
-      DelaySeconds: 10
 
   FrontendBucketPolicy:
     Type: AWS::S3::BucketPolicy
